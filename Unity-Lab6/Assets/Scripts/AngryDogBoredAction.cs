@@ -6,12 +6,13 @@ using UnityEngine;
 /// Действие Unity Behavior (настроение BORED): рядом нет собаки, за которой можно
 /// увязаться (или у неё рядом хозяин), поэтому злая собака скучает на месте.
 /// Завершается неудачей, как только появляется цель для нападения.
+/// Параметры берутся из <see cref="DogSettings"/> (инспектор).
 /// </summary>
 [System.Serializable, GeneratePropertyBag]
 [NodeDescription(
     name: "Angry Dog Bored",
     description: "Злая собака скучает на месте, пока не появится собака без хозяина.",
-    story: "[Agent] скучает на месте, пока не увидит другую собаку в радиусе [SightRange] м",
+    story: "[Agent] скучает на месте, пока не увидит другую собаку",
     category: "Angry Dog",
     id: "c9d6e7f8091a2b3c4d5e6f7081920314")]
 public partial class AngryDogBoredAction : Action
@@ -24,7 +25,13 @@ public partial class AngryDogBoredAction : Action
 
     private Transform m_Dog;
     private DogMood m_Mood;
+    private DogSettings m_Settings;
     private float m_BoredLogTimer;
+
+    private float Sight => m_Settings != null ? m_Settings.angrySightRange : SightRange.Value;
+    private float Fov => m_Settings != null ? m_Settings.angryFieldOfView : FieldOfView.Value;
+    private float LookSpeed => m_Settings != null ? m_Settings.lookAroundSpeed : LookAroundSpeed.Value;
+    private float LogRate => m_Settings != null ? m_Settings.boredLogInterval : BoredLogInterval.Value;
 
     protected override Status OnStart()
     {
@@ -35,6 +42,7 @@ public partial class AngryDogBoredAction : Action
 
         m_Dog = Agent.Value.transform;
         m_Mood = Agent.Value.GetComponent<DogMood>();
+        m_Settings = Agent.Value.GetComponent<DogSettings>();
         m_BoredLogTimer = 0f;
 
         if (m_Mood != null)
@@ -54,8 +62,7 @@ public partial class AngryDogBoredAction : Action
 
         DogMood otherDog = DogSenses.FindOtherDog(m_Dog.gameObject);
         bool canChase = otherDog != null && otherDog.State != DogMoodState.Happy &&
-                        DogSenses.CanSee(m_Dog.gameObject, otherDog.gameObject, SightRange.Value,
-                            FieldOfView.Value);
+                        DogSenses.CanSee(m_Dog.gameObject, otherDog.gameObject, Sight, Fov);
 
         if (canChase)
         {
@@ -63,13 +70,13 @@ public partial class AngryDogBoredAction : Action
         }
 
         // Скучает: лениво оглядывается по сторонам.
-        m_Dog.Rotate(Vector3.up, LookAroundSpeed.Value * Time.deltaTime, Space.World);
+        m_Dog.Rotate(Vector3.up, LookSpeed * Time.deltaTime, Space.World);
 
         m_BoredLogTimer += Time.deltaTime;
-        if (m_BoredLogTimer >= BoredLogInterval.Value)
+        if (m_BoredLogTimer >= LogRate)
         {
             m_BoredLogTimer = 0f;
-            Debug.Log($"{m_Mood?.dogName ?? "Злая собака"}: скучно... где все собаки?", m_Dog.gameObject);
+            Debug.Log($"{Name}: скучно... где все собаки?", m_Dog.gameObject);
         }
 
         return Status.Running;
@@ -79,5 +86,8 @@ public partial class AngryDogBoredAction : Action
     {
         m_Dog = null;
         m_Mood = null;
+        m_Settings = null;
     }
+
+    private string Name => m_Mood != null ? m_Mood.dogName : "Злая собака";
 }

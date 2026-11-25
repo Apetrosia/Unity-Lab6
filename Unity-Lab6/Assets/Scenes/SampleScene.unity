@@ -1014,7 +1014,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 317154861}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.20330423, y: -0.0017855188, z: 0.00037074694, w: 0.979114}
+  m_LocalRotation: {x: 0.20330441, y: -0.0012613297, z: 0.0002619038, w: 0.9791148}
   m_LocalPosition: {x: 4, y: 2.503529, z: -4.7685847}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1223,7 +1223,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.20330423, y: -0.001785519, z: 0.000370747, w: 0.97911394}
+  m_LocalRotation: {x: 0.20330445, y: -0.00126133, z: 0.00026190392, w: 0.9791148}
   m_LocalPosition: {x: 4, y: 2.503529, z: -4.7685847}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1341,7 +1341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.2}
+  m_AnchoredPosition: {x: 0, y: 1.15}
   m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &370149188
@@ -1677,7 +1677,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.2}
+  m_AnchoredPosition: {x: 0, y: 1.15}
   m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &471935956
@@ -1805,11 +1805,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 48
+    m_FontSize: 36
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 48
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1884,11 +1884,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 48
+    m_FontSize: 36
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 48
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1936,6 +1936,7 @@ GameObject:
   - component: {fileID: 1393236365}
   - component: {fileID: 1393236364}
   - component: {fileID: 1393236363}
+  - component: {fileID: 1393236368}
   m_Layer: 0
   m_Name: Dog
   m_TagString: Untagged
@@ -1956,13 +1957,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
   m_Graph: {fileID: -2727846479434009262, guid: 38f2b725b3f32654e949e1941d60715b, type: 2}
-  m_BlackboardVariableOverridesList: []
+  m_BlackboardVariableOverridesList:
+  - rid: 4196894739800261422
   m_OriginalGraph: {fileID: 0}
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4196894739800261422
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 1393236362}
 --- !u!114 &1393236364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2051,13 +2061,49 @@ Transform:
   m_GameObject: {fileID: 1393236362}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 0.5, z: -1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 3, y: 0.35, z: -1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 471935955}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1393236368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393236362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c9297c58a4f869488680d7130a13248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DogSettings
+  sightRange: 10
+  fieldOfView: 360
+  closeThreatRange: 5
+  calmDistance: 10
+  angrySightRange: 18
+  angryFieldOfView: 160
+  followSpeed: 3.5
+  wanderSpeed: 2.5
+  scaredSpeed: 3.5
+  stopDistance: 1.5
+  attackDistance: 1.4
+  wanderRadius: 2
+  confusedDuration: 2
+  worriedDuration: 5
+  worriedDirectionChangeInterval: 1.5
+  scaredDirectionChangeInterval: 3
+  sobInterval: 3
+  lookAroundSpeed: 25
+  boredLogInterval: 5
+  attackLogInterval: 2
+  useGroundBounds: 1
+  platformCenter: {x: 0, y: 0, z: 0}
+  platformSize: {x: 100, y: 100}
+  edgeMargin: 0.5
 --- !u!1 &1932294802
 GameObject:
   m_ObjectHideFlags: 0
@@ -2071,6 +2117,7 @@ GameObject:
   - component: {fileID: 1932294805}
   - component: {fileID: 1932294804}
   - component: {fileID: 1932294803}
+  - component: {fileID: 1932294808}
   m_Layer: 0
   m_Name: AngryDog
   m_TagString: Untagged
@@ -2091,13 +2138,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
   m_Graph: {fileID: 1782187896644927137, guid: baf51b3d592972e408ca4e6ada41009f, type: 2}
-  m_BlackboardVariableOverridesList: []
+  m_BlackboardVariableOverridesList:
+  - rid: 4196894739800261421
   m_OriginalGraph: {fileID: 0}
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4196894739800261421
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 1932294802}
 --- !u!114 &1932294804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2186,13 +2242,49 @@ Transform:
   m_GameObject: {fileID: 1932294802}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: 0.5, z: 8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -8, y: 0.35, z: 8}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 370149187}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1932294808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932294802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c9297c58a4f869488680d7130a13248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DogSettings
+  sightRange: 10
+  fieldOfView: 140
+  closeThreatRange: 5
+  calmDistance: 4
+  angrySightRange: 18
+  angryFieldOfView: 160
+  followSpeed: 3.5
+  wanderSpeed: 2.5
+  scaredSpeed: 3.5
+  stopDistance: 1.5
+  attackDistance: 1.4
+  wanderRadius: 2
+  confusedDuration: 2
+  worriedDuration: 5
+  worriedDirectionChangeInterval: 1.5
+  scaredDirectionChangeInterval: 3
+  sobInterval: 3
+  lookAroundSpeed: 25
+  boredLogInterval: 5
+  attackLogInterval: 2
+  useGroundBounds: 1
+  platformCenter: {x: 0, y: 0, z: 0}
+  platformSize: {x: 100, y: 100}
+  edgeMargin: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

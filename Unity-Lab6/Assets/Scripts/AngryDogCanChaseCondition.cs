@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Условие Unity Behavior: злая собака может нападать — другая собака в её радиусе
 /// обзора (он больше, чем у нашей собаки) и эта собака НЕ в состоянии HAPPY.
+/// Параметры берутся из <see cref="DogSettings"/> (инспектор).
 /// </summary>
 [System.Serializable, GeneratePropertyBag]
 [Condition(
@@ -18,6 +19,9 @@ public partial class AngryDogCanChaseCondition : Condition
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<float> SightRange = new BlackboardVariable<float>(18f);
     [SerializeReference] public BlackboardVariable<float> FieldOfView = new BlackboardVariable<float>(160f);
+
+    private DogSettings m_Settings;
+    private GameObject m_SettingsOwner;
 
     public override bool IsTrue()
     {
@@ -39,6 +43,14 @@ public partial class AngryDogCanChaseCondition : Condition
             return false;
         }
 
-        return DogSenses.CanSee(agent, otherDog.gameObject, SightRange.Value, FieldOfView.Value);
+        if (m_SettingsOwner != agent)
+        {
+            m_SettingsOwner = agent;
+            m_Settings = agent.GetComponent<DogSettings>();
+        }
+
+        return DogSenses.CanSee(agent, otherDog.gameObject,
+            m_Settings != null ? m_Settings.angrySightRange : SightRange.Value,
+            m_Settings != null ? m_Settings.angryFieldOfView : FieldOfView.Value);
     }
 }

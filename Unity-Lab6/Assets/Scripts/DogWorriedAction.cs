@@ -4,15 +4,16 @@ using UnityEngine;
 
 /// <summary>
 /// Действие Unity Behavior (настроение WORRIED): собака бегает туда-сюда в небольшом
-/// радиусе <see cref="Duration"/> секунд и ищет игрока. Если игрок появился раньше —
-/// действие завершается неудачей, и граф возвращает собаку в состояние HAPPY.
-/// Если нет — по истечении времени граф переводит собаку в состояние DEPRESSION.
+/// радиусе и ищет игрока. Если игрок появился раньше — действие завершается неудачей,
+/// и граф возвращает собаку в состояние HAPPY. Если нет — по истечении времени граф
+/// переводит собаку в состояние DEPRESSION.
+/// Маршрут бега лежит внутри границ платформы (см. <see cref="DogSettings"/>).
 /// </summary>
 [System.Serializable, GeneratePropertyBag]
 [NodeDescription(
     name: "Dog Worried",
     description: "Собака бегает туда-сюда в небольшом радиусе и ищет игрока.",
-    story: "[Agent] бегает туда-сюда в радиусе [Radius] м со скоростью [Speed] м/с и ищет [Target] [Duration] с",
+    story: "[Agent] бегает туда-сюда и ищет [Target] [Duration] с",
     category: "Dog",
     id: "f6a9b8c7e0d19c3f4a5b6c7d8e9f0123")]
 public partial class DogWorriedAction : Action
@@ -30,12 +31,22 @@ public partial class DogWorriedAction : Action
 
     private Transform m_Dog;
     private DogMood m_Mood;
+    private DogSettings m_Settings;
     private Vector3 m_PointA;
     private Vector3 m_PointB;
     private bool m_GoToPointB = true;
     private float m_Timer;
     private float m_PauseTimer;
     private bool m_IsPausing;
+
+    private float MoveSpeed => m_Settings != null ? m_Settings.wanderSpeed : Speed.Value;
+    private float SearchRadius => m_Settings != null ? m_Settings.wanderRadius : Radius.Value;
+    private float SearchTime => m_Settings != null ? m_Settings.worriedDuration : Duration.Value;
+    private float TurnDelay => m_Settings != null
+        ? m_Settings.worriedDirectionChangeInterval
+        : DirectionChangeInterval.Value;
+    private float Sight => m_Settings != null ? m_Settings.sightRange : SightRange.Value;
+    private float Fov => m_Settings != null ? m_Settings.fieldOfView : FieldOfView.Value;
 
     protected override Status OnStart()
     {
@@ -46,6 +57,7 @@ public partial class DogWorriedAction : Action
 
         m_Dog = Agent.Value.transform;
         m_Mood = Agent.Value.GetComponent<DogMood>();
+        m_Settings = Agent.Value.GetComponent<DogSettings>();
 
         // Бегаем "туда-сюда" поперёк направления взгляда собаки, вокруг текущего места.
         Vector3 home = m_Dog.position;
@@ -56,8 +68,8 @@ public partial class DogWorriedAction : Action
         }
 
         axis.Normalize();
-        m_PointA = home - axis * Radius.Value;
-        m_PointB = home + axis * Radius.Value;
+        m_PointA = Clamp(home - axis * SearchRadius);
+        m_PointB = Clamp(home + axis * SearchRadius);
         m_GoToPointB = true;
         m_Timer = 0f;
         m_PauseTimer = 0f;
@@ -68,7 +80,7 @@ public partial class DogWorriedAction : Action
             m_Mood.SetMood(DogMoodState.Worried);
         }
 
-        Debug.Log($"Собака: ищу игрока — бегаю туда-сюда {Duration.Value:0.#} с.", m_Dog.gameObject);
+        Debug.Log($"{Name}: ищу игрока — бегаю туда-сюда {SearchTime:0.#} с.", m_Dog.gameObject);
         return Status.Running;
     }
 
@@ -79,20 +91,27 @@ public partial class DogWorriedAction : Action
             return Status.Failure;
         }
 
-        if (DogSenses.IsThreatened(m_Dog.gameObject, SightRange.Value, FieldOfView.Value))
+        // Хозяин вошёл в радиус — сразу HAPPY, без промежуточных состояний.
+        if (DogSenses.IsPlayerClose(m_Dog.gameObject, Calm))
+        {
+            Debug.Log($"{Name}: хозяин вернулся! Сразу перехожу в HAPPY.", m_Dog.gameObject);
+            return Status.Failure;
+        }
+
+        if (DogSenses.IsThreatened(m_Dog.gameObject, Sight, Fov, Calm, Close))
         {
             return Status.Failure;
         }
 
         GameObject target = Target != null && Target.Value != null ? Target.Value : DogSenses.FindPlayer();
-        if (DogSenses.CanSee(m_Dog.gameObject, target, SightRange.Value, FieldOfView.Value))
+        if (DogSenses.CanSee(m_Dog.gameObject, target, Sight, Fov))
         {
-            Debug.Log("Собака: нашла игрока!", m_Dog.gameObject);
+            Debug.Log($"{Name}: нашла игрока!", m_Dog.gameObject);
             return Status.Failure;
         }
 
         m_Timer += Time.deltaTime;
-        if (m_Timer >= Duration.Value)
+        if (m_Timer >= SearchTime)
         {
             return Status.Success;
         }
@@ -105,15 +124,16 @@ public partial class DogWorriedAction : Action
     {
         m_Dog = null;
         m_Mood = null;
+        m_Settings = null;
     }
 
     private void Patrol()
     {
-        // На развороте собака замирает на DirectionChangeInterval секунд.
+        // На развороте собака замирает на TurnDelay секунд.
         if (m_IsPausing)
         {
             m_PauseTimer += Time.deltaTime;
-            if (m_PauseTimer < DirectionChangeInterval.Value)
+            if (m_PauseTimer < TurnDelay)
             {
                 return;
             }
@@ -136,8 +156,18 @@ public partial class DogWorriedAction : Action
         }
 
         Vector3 direction = toDestination.normalized;
-        m_Dog.position += direction * (Speed.Value * Time.deltaTime);
+        m_Dog.position = Clamp(m_Dog.position + direction * (MoveSpeed * Time.deltaTime));
         m_Dog.rotation = Quaternion.Slerp(m_Dog.rotation, Quaternion.LookRotation(direction),
             8f * Time.deltaTime);
     }
+
+    /// <summary>Маршрут собаки никогда не выходит за границы платформы.</summary>
+    private Vector3 Clamp(Vector3 position)
+    {
+        return m_Settings != null ? m_Settings.ClampToPlatform(position) : position;
+    }
+
+    private string Name => m_Mood != null ? m_Mood.dogName : "Собака";
+    private float Calm => m_Settings != null ? m_Settings.calmDistance : DogSenses.CalmDistance;
+    private float Close => m_Settings != null ? m_Settings.closeThreatRange : DogSenses.CloseThreatRange;
 }

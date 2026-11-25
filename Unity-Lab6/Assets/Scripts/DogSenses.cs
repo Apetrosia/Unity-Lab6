@@ -32,7 +32,7 @@ public static class DogSenses
         s_CachedPlayer = GameObject.FindGameObjectWithTag(PlayerTag);
         if (s_CachedPlayer == null)
         {
-            PlayerController playerController = Object.FindFirstObjectByType<PlayerController>();
+            PlayerController playerController = Object.FindAnyObjectByType<PlayerController>();
             if (playerController != null)
             {
                 s_CachedPlayer = playerController.gameObject;
@@ -45,7 +45,7 @@ public static class DogSenses
     /// <summary>Ближайшая другая собака (не <paramref name="self"/>).</summary>
     public static DogMood FindOtherDog(GameObject self)
     {
-        DogMood[] dogs = Object.FindObjectsByType<DogMood>(FindObjectsSortMode.None);
+        DogMood[] dogs = Object.FindObjectsByType<DogMood>(FindObjectsInactive.Exclude);
         DogMood nearest = null;
         float nearestDistance = float.MaxValue;
 
